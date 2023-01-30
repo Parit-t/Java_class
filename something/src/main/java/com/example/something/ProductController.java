@@ -1,8 +1,8 @@
-package com.example.demo;
+package com.example.something;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.dao.ProductRepository;
+import productDAO.ProductRepo;
 
-@RestController()
-@RequestMapping("/catalog")
+@RestController
+@RequestMapping
 public class ProductController {
 	private static Map<Integer, Product> productRepo = new HashMap<>();
 	   static {
@@ -31,42 +32,32 @@ public class ProductController {
 	   }
 	   
 	   @Autowired
-	   private ProductRepository repo;
+	   private ProductRepo ProdRepo;
 	   
-	   @DeleteMapping("/products/{id}")
-	   public ResponseEntity<Object> delete(@PathVariable("id") Integer id) { 
+	   @DeleteMapping(value = "/products/{id}")
+	   public ResponseEntity<Object> delete(@PathVariable("id") int id) { 
 	      productRepo.remove(id);
 	      return new ResponseEntity<>("Product is deleted successsfully", HttpStatus.OK);
 	   }
 	   
-	   @PutMapping("/products/{id}")
-	   public Product updateProduct(@PathVariable("id") Integer id,@RequestBody  Product product) { 
+	   @PutMapping(value = "/products/{id}")
+	   public Product updateProduct(@PathVariable("id") Integer id,  @RequestBody Product product) { 
 	      Product oldProduct = productRepo.get(id);
 		  oldProduct.setName(product.getName());
+	      
 	      return product;
 	   }
 	   
-	   @PostMapping("/products")
+	   @PostMapping(value = "/products")
 	   public Product createProduct(@RequestBody Product product) {
 	      //productRepo.put(product.getId(), product);
-		  //product.setId(0);
-		  repo.save(product);
+	      ProdRepo.save(product);
 	      return product;
 	   }
 	   
-	   @GetMapping("/products")
+	   @GetMapping(value = "/products")
 	   public Iterable<Product> getProduct() {
-		  return repo.findAll();
-	      //return productRepo.values();
-	   }
-	   
-	   @GetMapping("/products/{id}")
-	   public Product getOneProduct(@PathVariable("id") int id) {
-		  Product prod = repo.findById(id).orElseThrow();
-//		  if (prod == null) {
-//			  throw new RuntimeException("Product Not found");
-//		  }
-		  return prod;
-	      //return productRepo.values();
+	     // return productRepo.values();
+	   	return ProdRepo.findAll();
 	   }
 }
